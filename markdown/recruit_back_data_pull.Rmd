@@ -1,0 +1,59 @@
+---
+title: "Recruit back student list"
+date: "2023-06-12"
+output: html_document
+---
+
+
+In this first chunk, we load all the libraries we use to process the data for this project.
+
+```{r load libraries}
+library(utHelpR)
+library(tidyverse)
+library(readr)
+library(here)
+```
+
+In this chunk we pull the data. If you look at the SQL, there are several columns we pull in that we don't use. Feel free to edit the columns in the SQL query. There are several columns available in `student` and `student_term_level` that we did not add to the SQL. Feel free to browse the tables and add any columns you may need.
+
+
+```{r pull data}
+raw_pull <- utHelpR::get_data_from_sql_file("edify_pull.sql", dsn="edify", context="project")
+```
+
+We use the traits vector to pull in the columns that we want for the data export. You can adjust these as needed.
+
+```{r define traits for pull}
+traits <- c(
+  'student_id',
+  'first_name', 
+  'last_name', 
+  'primary_phone_number',
+  "local_address_line_1",
+  "local_address_city",
+  "local_address_state_code",
+  "local_address_zip_code"
+)
+```
+
+In this chunk, we edit the list of students down.
+
+```{r generate student list}
+student_list <- raw_pull %>% 
+  filter(cumulative_credits >= 45) %>% 
+  filter(has_hold == FALSE) %>% 
+  filter(!is.na(local_address_city )) %>% 
+  select(all_of(traits))
+```
+
+
+Here we write the student list to a csv file in the sensitive folder. As with all projects and gitHub, make sure you don't write any data files involving student information to GitHub. The best way to do this is to make sure any work you do with student data is either handled in memory, or is stored in the sensitive file.
+
+```{r export student list}
+write_csv(
+  student_list,
+  here::here('sensitive', 'student_list.csv')
+)
+```
+
+
