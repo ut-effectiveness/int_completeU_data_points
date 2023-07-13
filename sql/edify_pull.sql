@@ -10,7 +10,7 @@
                   AND a.is_enrolled_census IS TRUE
                   AND a.is_degree_seeking
                   AND a.student_id NOT IN (SELECT a1.student_id
-                                             FROM student_term_level a1
+                                             FROM export.student_term_level a1
                                             WHERE a1.term_id = '202340'
                                               AND a1.is_enrolled IS TRUE
                 )
@@ -38,6 +38,7 @@ SELECT a.student_id,
        c.first_name,
        c.last_name,
        c.birth_date,
+       c.home_email,
        c.primary_phone_number,
        c.cell_phone_number,
        c.campus_phone_number,
